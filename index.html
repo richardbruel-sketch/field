@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Field">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Field · Suivez l'action.</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800;900&display=swap">
+<style>
+:root{--bg:#000;--card:#121212;--ink:#fff;--mut:#9A9A9A;--line:#2A2A2A;--g:#48BF8A;--p:#F062A8;--y:#F9CD54;--t:#2BB3B1;--o:#F28C52;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:#000}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Poppins,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px 16px 40px}
+button{font:inherit;color:inherit;cursor:pointer}
+.logo{display:block;width:230px;max-width:70%;margin:6px auto 4px}
+.tag{text-align:center;font-weight:700;margin:0 0 18px}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{padding:7px 15px;border-radius:999px;border:1.5px solid var(--line);background:transparent;font-size:14px;font-weight:600}
+.chip.on{background:#fff;color:#000;border-color:#fff}
+.list{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.card{background:var(--card);border:1.5px solid var(--c,var(--line));border-radius:16px;padding:14px}
+.top{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--mut)}
+.top b{color:var(--c)}
+.teams{font-size:22px;font-weight:800;line-height:1.2;margin:6px 0}
+.src{font-size:13px;color:var(--mut);margin:0 0 12px}
+.btn{width:100%;padding:11px 16px;border-radius:12px;border:1.5px solid var(--line);background:transparent;font-weight:700}
+.btn.main{background:var(--c);color:#000;border-color:var(--c)}
+#pn{margin-top:16px;border-width:2px}
+#pn h2{font-size:20px;font-weight:800;margin:0}
+audio{width:100%;margin-top:10px}
+#msg,.sub{color:var(--mut);font-size:14px;margin:6px 0 0}
+a{color:var(--g)}
+.score{display:flex;justify-content:space-between;align-items:baseline;font-weight:800;font-size:18px;margin-top:12px}
+.feed div{display:flex;gap:8px;margin-top:8px;font-size:14px}
+.pill{flex:none;padding:1px 8px;border-radius:6px;background:var(--c);color:#000;font-size:12px;font-weight:700;height:fit-content}
+svg{width:100%;height:auto;display:block}
+#ball{transition:transform 1.3s ease-in-out}
+.demo{border:1px dashed var(--line);border-radius:12px;padding:8px 12px;font-size:13px;color:var(--mut);margin-top:16px}
+footer{margin-top:24px;text-align:center;font-size:13px;color:var(--mut)}
+:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+<svg class="logo" viewBox="0 0 300 150" role="img" aria-label="Field"><g font-family="Poppins,Arial Black,sans-serif" font-weight="900" font-size="68" fill="none" stroke-width="2.2"><text x="150" y="62" text-anchor="middle" stroke="#1E4D38">Field</text><text x="150" y="86" text-anchor="middle" stroke="#8E3566">Field</text><text x="150" y="110" text-anchor="middle" stroke="#B8963C">Field</text><text x="150" y="134" text-anchor="middle" fill="#fff" stroke="none">Field</text></g></svg>
+<p class="tag">Suivez l'action.</p>
+
+<div class="row" id="fs" role="group" aria-label="Statut"></div>
+<div class="row" id="fp" role="group" aria-label="Sport"></div>
+
+<section id="pn" class="card" hidden aria-live="polite">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 id="pt"></h2><button class="chip" id="px">Fermer</button></div>
+<div id="pb" style="margin-top:8px"></div>
+</section>
+
+<div class="list" id="list"></div>
+<p class="demo" id="demo" hidden>Mode démonstration : matchs et horaires fictifs. Ajoute un fichier matchs.json pour afficher les vrais.</p>
+<footer id="ft">Field · bêta</footer>
+</main>
+<script src="scenes.js"></script>
+<script>
+var CONTACT="";
+var RA=[{n:"RMC",u:"7a3a3989-8f26-44f7-9ae5-fa91e5cf4f9d",w:"https://rmc.bfmtv.com"},{n:"franceinfo",u:"1cfb151d-a341-11e9-a787-52543be04c81",w:"https://www.francetvinfo.fr"},{n:"Europe 1",u:"dfcef843-6bf9-40f6-b3fe-2b224df86e48",w:"https://www.europe1.fr"},{n:"ici Occitanie",u:"760cc065-1e88-11ea-a955-52543be04c81",w:"https://www.ici.fr"},{n:"ici Nord",u:"96131074-0601-11e8-ae97-52543be04c81",w:"https://www.ici.fr"},{n:"ici Armorique",u:"9612fc35-0601-11e8-ae97-52543be04c81",w:"https://www.ici.fr"},{n:"ici RCFM",u:"96131916-0601-11e8-ae97-52543be04c81",w:"https://www.ici.fr"}];
+var H=["https://de1.api.radio-browser.info","https://at1.api.radio-browser.info"];
+var D={Football:110,Rugby:100,Tennis:180,Basket:120,Voile:120,Golf:240,"Formule 1":120},C={Football:"var(--g)",Rugby:"var(--p)",Tennis:"var(--y)",Basket:"var(--o)",Voile:"var(--t)",Golf:"#9B8AFB","Formule 1":"#E24B4A"};
+var M=[],fs="all",fp="Tous",rem={},tm=null,au=null;
+function demo(){var t=Date.now(),f=function(o){return new Date(t+o*60000).toISOString()};return[
+{sport:"Football",comp:"Ligue 1",a:"Paris",b:"Marseille",debut:f(-40),source:{type:"radio",radio:0}},
+{sport:"Football",comp:"Ligue des nations",a:"France",b:"Italie",debut:f(-10),source:{type:"free",nom:"TF1",url:"https://www.tf1.fr"}},
+{sport:"Tennis",comp:"Finale du Masters",a:"Joueur 1",b:"Joueur 2",debut:f(-60),source:{type:"free",nom:"France TV",url:"https://www.france.tv"}},
+{sport:"Football",comp:"Premier League",a:"Arsenal",b:"Chelsea",debut:f(-25),source:{type:"abroad"}},
+{sport:"Football",comp:"Liga",a:"Barcelone",b:"Real Madrid",debut:f(90),source:{type:"abroad"}},
+{sport:"Rugby",comp:"Top 14",a:"Toulouse",b:"La Rochelle",debut:f(200),source:{type:"radio",radio:0}},
+{sport:"Voile",comp:"SailGP",a:"Grande finale",debut:f(-60),fin:f(600),jour:true,source:{type:"free",nom:"SailGP (YouTube)",url:"https://www.youtube.com/@SailGP"}},
+{sport:"Golf",comp:"Open de France",a:"Dernier tour",debut:f(-90),fin:f(200),jour:true,source:{type:"none"}},
+{sport:"Formule 1",comp:"Grand Prix",a:"Course",debut:f(-20),source:{type:"abroad"}},
+{sport:"Basket",comp:"Betclic Élite",a:"Monaco",b:"Villeurbanne",debut:f(1500),source:{type:"none"}}]}
+function init(l,isDemo){M=l.map(function(x,i){var st=Date.parse(x.debut);return{id:i,sp:x.sport,c:x.comp,a:x.a,b:x.b,st:st,en:x.fin?Date.parse(x.fin):st+(D[x.sport]||120)*60000,j:!!x.jour,f:x.flux,s:x.source||{type:"none"}}});document.getElementById("demo").hidden=!isDemo;bar();render()}
+function stat(m){var n=Date.now();return n<m.st?"soon":n<m.en?"live":"end"}
+function hh(t){var d=new Date(t),a=new Date(),j=new Date(a.getFullYear(),a.getMonth(),a.getDate()+1),h=d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});if(d.toDateString()==a.toDateString())return"Aujourd'hui "+h;if(d.toDateString()==j.toDateString())return"Demain "+h;return d.toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"})+" "+h}
+function dj(t){return new Date(t).toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"})+" · horaires à confirmer"}
+function src(m){var s=m.s;return s.type=="free"?"Gratuit · "+s.nom:s.type=="radio"?"Radio française · "+RA[s.radio].n:s.type=="abroad"?"Radio étrangère (traduction bientôt)":"Aucune source gratuite en France"}
+function chips(el,list,cur,fn){el.innerHTML="";list.forEach(function(x){var b=document.createElement("button");b.className="chip"+(x[0]==cur?" on":"");b.textContent=x[1];b.setAttribute("aria-pressed",x[0]==cur);b.onclick=function(){fn(x[0])};el.appendChild(b)})}
+function bar(){chips(document.getElementById("fs"),[["all","Tous"],["live","En cours"],["soon","À venir"]],fs,function(v){fs=v;bar();render()});var sp=["Tous"];M.forEach(function(m){if(sp.indexOf(m.sp)<0)sp.push(m.sp)});chips(document.getElementById("fp"),sp.map(function(x){return[x,x=="Tous"?"Tous les sports":x]}),fp,function(v){fp=v;bar();render()})}
+function render(){var L=document.getElementById("list");L.innerHTML="";var it=M.filter(function(m){var s=stat(m);return s!="end"&&(fs=="all"||fs==s)&&(fp=="Tous"||fp==m.sp)}).sort(function(x,y){var a=stat(x)=="live"?0:1,b=stat(y)=="live"?0:1;return a-b||x.st-y.st});if(!it.length){L.innerHTML="<p class='sub'>Aucun match pour ce filtre.</p>";return}it.forEach(function(m){var s=stat(m),c=document.createElement("div");c.className="card";c.style.setProperty("--c",C[m.sp]||"var(--g)");c.innerHTML="<div class='top'><span></span><b></b></div><div class='teams'></div><p class='src'></p>";c.children[0].children[0].textContent=m.sp+" · "+m.c;var t=c.children[0].children[1];if(s=="live"){var mn=Math.min(Math.floor((Date.now()-m.st)/60000),95);t.textContent=m.j?"ÉVÉNEMENT EN COURS":"EN DIRECT"+(m.sp=="Football"?" "+mn+"'":"")}else{t.style.color="var(--mut)";t.textContent=m.j?dj(m.st):hh(m.st)}c.children[1].textContent=m.b?m.a+" – "+m.b:m.a;c.children[2].textContent=src(m);var b=document.createElement("button");b.className="btn";if(s=="live"){var ty=m.s.type;b.className="btn main";b.textContent=ty=="free"?"Regarder":ty=="radio"?"Écouter + animation":"Voir les détails";b.onclick=function(){openM(m)}}else{b.textContent=rem[m.id]?"Rappel activé":"Me rappeler";b.setAttribute("aria-pressed",!!rem[m.id]);b.onclick=function(){rem[m.id]=!rem[m.id];render()}}c.appendChild(b);L.appendChild(c)})}
+function lien(w,n){var m=document.getElementById("msg");m.textContent="Flux indisponible. ";var a=document.createElement("a");a.href=w;a.target="_blank";a.rel="noopener";a.textContent="Ouvrir "+n+" sur son site";m.appendChild(a)}
+async function viaAnnuaire(u){for(var i=0;i<H.length;i++){try{var x=await fetch(H[i]+"/json/stations/byuuid/"+u),j=await x.json();if(j[0]&&j[0].url_resolved)return j[0].url_resolved}catch(e){}}return null}
+async function ecoute(r){var m=document.getElementById("msg");m.textContent="Connexion à la radio…";var u=await viaAnnuaire(r.u);if(!u){lien(r.w,r.n);return}if(location.protocol=="https:"&&u.indexOf("http:")==0)u=u.replace("http:","https:");au.src=u;au.play().then(function(){m.textContent="En direct."}).catch(function(){lien(r.w,r.n)})}
+var S=[{m:1,x:190,y:120,z:0,t:"Coup d'envoi",s:"C'est parti !"},{m:3,x:260,y:45,z:1,t:"Passe",s:"Belle ouverture sur l'aile."},{m:6,x:150,y:150,z:0,t:"Récupération",s:"Le ballon change de camp."},{m:8,x:22,y:75,z:2,t:"Tir",s:"Frappe, juste à côté du poteau."},{m:12,x:362,y:16,z:1,t:"Corner",s:"Corner côté droit."},{m:13,x:364,y:120,z:1,t:"But",s:"Reprise de la tête... but !",g:1},{m:15,x:200,y:110,z:0,t:"Carton jaune",s:"Faute au milieu de terrain."}];
+function anim(){var k=-1,sa=0,b=document.getElementById("ball"),z=document.getElementById("zn"),f=document.getElementById("feed");clearInterval(tm);function st(){k++;if(k>=S.length){clearInterval(tm);return}var e=S[k];b.style.transform="translate("+e.x+"px,"+e.y+"px)";z.setAttribute("x",e.z==2?4:256);z.setAttribute("opacity",e.z?".3":"0");if(e.g){sa++;document.getElementById("sa").textContent=sa}document.getElementById("mn").textContent=e.m+"'";var d=document.createElement("div");d.innerHTML="<span class='pill'></span><span></span>";d.children[0].textContent=e.t;d.children[1].textContent=e.m+"' "+e.s;f.insertBefore(d,f.firstChild);while(f.children.length>3)f.removeChild(f.lastChild)}st();tm=setInterval(st,2800)}
+function stop(){Scenes.stop();clearInterval(tm);if(au){au.pause();au=null}}
+function openM(m){var p=document.getElementById("pn"),b=document.getElementById("pb"),s=m.s;p.style.setProperty("--c",C[m.sp]||"var(--g)");document.getElementById("pt").textContent=m.b?m.a+" – "+m.b:m.a;p.hidden=false;stop();b.innerHTML="";if(s.type=="free"){b.innerHTML="<p class='sub'>Ce match est diffusé gratuitement.</p>";var a=document.createElement("a");a.className="btn main";a.style.cssText="display:block;text-align:center;text-decoration:none;margin-top:10px";a.href=s.url;a.target="_blank";a.rel="noopener";a.textContent="Ouvrir "+s.nom;b.appendChild(a)}else if(s.type=="radio"){var r=RA[s.radio];b.innerHTML="<div>Radio : <b></b></div><audio id='au' controls></audio><p id='msg'></p>";b.querySelector("b").textContent=r.n;au=document.getElementById("au");ecoute(r)}else if(s.type=="abroad"){b.innerHTML="<p class='sub'>Match diffusé seulement à l'étranger. La radio étrangère avec voix traduite arrive dans une prochaine version.</p>"}else{b.innerHTML="<p class='sub'>Aucune diffusion gratuite trouvée en France pour ce match.</p>"}var an=document.createElement("div");an.style.cssText="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)";b.appendChild(an);Scenes.start(m.sp,an,m.f);p.scrollIntoView({behavior:"smooth",block:"start"})}
+document.getElementById("px").onclick=function(){document.getElementById("pn").hidden=true;stop();document.getElementById("pb").innerHTML=""};
+if(CONTACT){var ft=document.getElementById("ft"),a=document.createElement("a");a.href="mailto:"+CONTACT+"?subject=Avis%20Field%20b%C3%AAta";a.textContent="Envoyer mes remarques";ft.appendChild(document.createTextNode(" · "));ft.appendChild(a)}
+try{if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js")}catch(e){}
+fetch("matchs.json").then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){if(!Array.isArray(j)||!j.length)throw 0;init(j,false)}).catch(function(){init(demo(),true)});
+setInterval(render,30000);
+</script>
+</body>
+</html>
