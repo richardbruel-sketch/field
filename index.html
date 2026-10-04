@@ -63,7 +63,7 @@ footer{margin-top:24px;text-align:center;font-size:13px;color:var(--mut)}
 </section>
 
 <div class="list" id="list"></div>
-<footer id="ft">Field · bêta</footer>
+<footer id="ft">Field · bêta · Calendrier : ESPN (source non officielle)</footer>
 </main>
 <script src="scenes.js"></script>
 <script>
@@ -73,7 +73,7 @@ var H=["https://de1.api.radio-browser.info","https://at1.api.radio-browser.info"
 var SP=["Football","Rugby","Tennis","Voile","Golf","Formule 1","Basket"];
 var COL={Football:"var(--g)",Rugby:"var(--p)",Tennis:"var(--y)",Voile:"var(--t)",Golf:"#9B8AFB","Formule 1":"#E24B4A",Basket:"var(--o)"};
 var DUR={Football:115,Rugby:100,Tennis:180,Basket:120,Voile:120,Golf:240,"Formule 1":120};
-var CP=[["Ligue 1","French Ligue 1",4334],["Ligue 2","French Ligue 2",4401],["Premier League","English Premier League",4328],["Liga","Spanish La Liga",4335],["Serie A","Italian Serie A",4332],["Bundesliga","German Bundesliga",4331],["Ligue des champions","UEFA Champions League",4480]];
+var CP=[["Ligue 1","fra.1"],["Ligue 2","fra.2"],["Premier League","eng.1"],["Liga","esp.1"],["Serie A","ita.1"],["Bundesliga","ger.1"],["Ligue des champions","uefa.champions"]];
 var man=[],api={},part={},dif={},sp="Football",fs="all",fc="Toutes",au=null,rem={};
 function mid(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
 var D0=mid(new Date()),day=D0;
@@ -87,24 +87,17 @@ chips($("fs"),[["all","Tous"],["live","En cours"],["soon","À venir"],["end","Te
 $("fc").hidden=sp!="Football";chips($("fc"),[["Toutes","Toutes les compétitions"]].concat(CP.map(function(c){return[c[0],c[0]]})),fc,function(v){fc=v;bar();render()})}
 function ts(e){var t=e.strTimestamp||(e.dateEvent+"T"+(e.strTime||"00:00:00"));return Date.parse(/Z|[+-]\d\d:?\d\d$/.test(t)?t:t+"Z")}
 function srcFor(c){var d=dif[c]||{};if(d.gratuit)return{type:"free",nom:d.gratuit.nom,url:d.gratuit.url,pay:d.payant};if(d.radios&&d.radios.length)return{type:"radio",radio:d.radios[0],conf:!!d.radio_verifie,pay:d.payant};return{type:"none",pay:d.payant}}
-function conv(e,c){var st=ts(e),h=e.intHomeScore,a=e.intAwayScore;return{id:"a"+e.idEvent,sp:"Football",c:c,a:e.strHomeTeam,b:e.strAwayTeam,st:st,en:st+115*6e4,sc:(h!=null&&a!=null&&h!==""&&a!=="")?h+" – "+a:null,s:srcFor(c)}}
+function conv(e,c){var cp=(e.competitions||[])[0]||{},t=cp.competitors||[],h=t.filter(function(x){return x.homeAway=="home"})[0]||t[0]||{},v=t.filter(function(x){return x.homeAway=="away"})[0]||t[1]||{},tp=(e.status&&e.status.type)||{},st=Date.parse(e.date),n=function(x){return x.team?x.team.displayName:"?"};return{id:"a"+e.id,sp:"Football",c:c,a:n(h),b:n(v),st:st,en:st+115*6e4,state:tp.state||"pre",min:tp.state=="in"?(e.status.displayClock||tp.shortDetail||""):"",sc:(tp.state&&tp.state!="pre"&&h.score!=null&&v.score!=null)?h.score+" – "+v.score:null,s:srcFor(c)}}
 function norm(x,i){var st=Date.parse(x.debut);return{id:"m"+i,sp:x.sport,c:x.comp,a:x.a,b:x.b,st:st,en:x.fin?Date.parse(x.fin):st+(DUR[x.sport]||120)*6e4,j:!!x.jour,f:x.flux,s:x.source||{type:"none"}}}
-function stat(m){var n=Date.now();return n<m.st?"soon":n<m.en?"live":"end"}
+function stat(m){if(m.state)return m.state=="in"?"live":m.state=="post"?"end":"soon";var n=Date.now();return n<m.st?"soon":n<m.en?"live":"end"}
 function ok(m){var d0=+day,d1=d0+864e5;return m.j?(m.st<d1&&m.en>d0):(m.st>=d0&&m.st<d1)}
 function hh(t){return new Date(t).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}
 function src(m){var s=m.s,p=s.pay?"TV payante : "+s.pay:"";if(s.type=="free")return"Gratuit · "+s.nom;if(s.type=="radio")return"Radio · "+RA[s.radio].n+(s.conf===false?" (à confirmer)":"")+(p?" · "+p:"");if(s.type=="abroad")return"Radio étrangère (traduction bientôt)";return p?p+" · aucune source gratuite connue":"Diffusion à renseigner"}
 function items(){var l=man.filter(function(m){return m.sp==sp});if(sp=="Football")l=l.concat(api[iso(day)]||[]);return l.filter(function(m){var s=stat(m);return ok(m)&&(fs=="all"||fs==s)&&(sp!="Football"||fc=="Toutes"||m.c==fc||!CP.some(function(c){return c[0]==m.c}))}).sort(function(x,y){var a=stat(x)=="live"?0:1,b=stat(y)=="live"?0:1;return a-b||x.st-y.st})}
 function render(){var L=$("list");L.innerHTML="";var it=items();if(!it.length){L.innerHTML="<p class='sub'>"+(sp=="Football"?"Aucun match ce jour-là pour ces filtres.":"Aucun événement ce jour-là. Le calendrier de ce sport sera branché bientôt.")+"</p>";return}
-it.forEach(function(m){var s=stat(m),c=document.createElement("div");c.className="card";c.style.setProperty("--c",COL[m.sp]||"var(--g)");c.innerHTML="<div class='top'><span></span><b></b></div><div class='teams'></div><p class='src'></p>";c.children[0].children[0].textContent=(m.j?m.c:m.c+" · "+hh(m.st));var t=c.children[0].children[1];if(s=="live"){t.textContent=m.j?"ÉVÉNEMENT EN COURS":"EN COURS (estimé)"}else if(s=="end"){t.style.color="var(--mut)";t.textContent="Terminé"+(m.sc?" · "+m.sc:"")}else{t.style.color="var(--mut)";t.textContent=m.j?"Horaires à confirmer":"À venir"}
+it.forEach(function(m){var s=stat(m),c=document.createElement("div");c.className="card";c.style.setProperty("--c",COL[m.sp]||"var(--g)");c.innerHTML="<div class='top'><span></span><b></b></div><div class='teams'></div><p class='src'></p>";c.children[0].children[0].textContent=(m.j?m.c:m.c+" · "+hh(m.st));var t=c.children[0].children[1];if(s=="live"){t.textContent=m.j?"ÉVÉNEMENT EN COURS":m.state?"EN COURS"+(m.min?" · "+m.min:""):"EN COURS (estimé)"}else if(s=="end"){t.style.color="var(--mut)";t.textContent="Terminé"+(m.sc?" · "+m.sc:"")}else{t.style.color="var(--mut)";t.textContent=m.j?"Horaires à confirmer":"À venir"}
 c.children[1].textContent=m.b?m.a+" – "+m.b:m.a;c.children[2].textContent=src(m);var b=document.createElement("button");b.className="btn";if(s=="live"){var ty=m.s.type;b.className="btn main";b.textContent=ty=="free"?"Regarder":ty=="radio"?"Écouter + animation":"Voir les détails";b.onclick=function(){openM(m)}}else if(s=="soon"){b.textContent=rem[m.id]?"Rappel activé":"Me rappeler";b.setAttribute("aria-pressed",!!rem[m.id]);b.onclick=function(){rem[m.id]=!rem[m.id];render()}}else{b.textContent="Terminé";b.disabled=true;b.style.opacity=.5}c.appendChild(b);L.appendChild(c)})}
-var pool={};
-function J(u){return fetch("https://www.thesportsdb.com/api/v1/json/"+KEY+"/"+u).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()})}
-function evs(j,c){return((j&&j.events)||[]).filter(function(e){return !e.strSport||e.strSport=="Soccer"}).map(function(e){return conv(e,c)})}
-async function stage(mk){var err=0,msg="",r=await Promise.all(CP.map(function(p){return J(mk(p)).then(function(j){return evs(j,p[0])}).catch(function(e){err++;msg=String(e&&e.message||e);return[]})}));return{l:[].concat.apply([],r),err:err,msg:msg}}
-async function fetchDay(k){var d0=+new Date(k+"T00:00:00"),d1=d0+864e5,tr=[],o=await stage(function(p){return"eventsday.php?d="+k+"&l="+encodeURIComponent(p[1])});tr.push("par nom : "+o.l.length);
-if(!o.l.length&&o.err<CP.length){o=await stage(function(p){return"eventsday.php?d="+k+"&l="+p[2]});tr.push("par identifiant : "+o.l.length)}
-if(!o.l.length&&o.err<CP.length){if(!pool.done){var a=await stage(function(p){return"eventsnextleague.php?id="+p[2]}),b=await stage(function(p){return"eventspastleague.php?id="+p[2]});pool.l=a.l.concat(b.l);pool.err=a.err+b.err;pool.done=1}o={l:pool.l.filter(function(m){return m.st>=d0&&m.st<d1}),err:pool.err,msg:""};tr.push("derniers et prochains matchs : "+o.l.length)}
-o.tr=tr;return o}
+async function fetchDay(k){var d0=+new Date(k+"T00:00:00"),d1=d0+864e5,d=k.replace(/-/g,""),err=0,msg="",r=await Promise.all(CP.map(function(p){return fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/"+p[1]+"/scoreboard?dates="+d).then(function(x){if(!x.ok)throw new Error("HTTP "+x.status);return x.json()}).then(function(j){return(j.events||[]).map(function(e){return conv(e,p[0])})}).catch(function(e){err++;msg=String(e&&e.message||e);return[]})}));return{l:[].concat.apply([],r).filter(function(m){return m.st>=d0&&m.st<d1}),err:err,msg:msg,tr:["source ESPN"]}}
 function load(){render();$("st").textContent="";if(sp!="Football")return;var k=iso(day),c=null;if(api[k]&&!part[k])return;try{c=sessionStorage.getItem("fld:"+k)}catch(e){}if(c){api[k]=JSON.parse(c);render();return}
 $("st").textContent="Chargement du calendrier…";fetchDay(k).then(function(o){api[k]=o.l;part[k]=(o.err||!o.l.length)?1:0;if(!part[k]){try{sessionStorage.setItem("fld:"+k,JSON.stringify(o.l))}catch(e){}}var t="";if(o.err>=CP.length)t="Service du calendrier injoignable ("+o.msg+").";else{if(!o.l.length)t="Aucun match trouvé pour ce jour. Détail : "+o.tr.join(" · ")+".";if(o.err)t+=" "+o.err+" compétition(s) en erreur."}$("st").textContent=t;render()})}
 function lien(w,n){var m=$("msg");m.textContent="Flux indisponible. ";var a=document.createElement("a");a.href=w;a.target="_blank";a.rel="noopener";a.textContent="Ouvrir "+n+" sur son site";m.appendChild(a)}

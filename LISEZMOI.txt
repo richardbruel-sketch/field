@@ -5,6 +5,6 @@ Installer : navigateur > "Ajouter à l'écran d'accueil".
 Matchs : modifier matchs.json (debut en ISO avec fuseau, source : radio / free / abroad / none). Radio : 0 RMC, 1 franceinfo, 2 Europe 1, 3 à 6 ici.
 Avis des amis : renseigner l'e-mail dans const CONTACT au début du script de index.html.
 Animations 2D : football, voile, golf, tennis, Formule 1 (scenes.js), pour l instant avec des données simulées, signalées dans l appli.
-Calendrier football : lu chaque jour via TheSportsDB (clé de test 123, limitée) ; diffusions : diffusions.json. Option ?demo dans l adresse pour voir les animations des autres sports.
+Calendrier football : lu chaque jour via ESPN (source non officielle, à remplacer par un fournisseur sous licence avant toute vente) ; diffusions : diffusions.json. Option ?demo dans l adresse pour voir les animations des autres sports.
 Flux de données : voir FORMAT_FLUX.md ; pour tester, renommer matchs-test.json en matchs.json.
 Limite : une radio qui ne propose qu'un flux http ne peut pas être lue depuis une page https ; l'appli affiche alors un lien vers le site de la radio.
