@@ -25,5 +25,24 @@
  },
  "Bundesliga": {
   "radios": []
+ },
+ "Ligue des nations": {
+  "gratuit": {
+   "nom": "TF1",
+   "url": "https://www.tf1.fr",
+   "equipes": [
+    "France"
+   ]
+  },
+  "radios": []
+ },
+ "Matchs amicaux": {
+  "radios": []
+ },
+ "Coupe du monde": {
+  "radios": []
+ },
+ "Euro": {
+  "radios": []
  }
 }
