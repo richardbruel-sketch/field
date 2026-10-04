@@ -44,5 +44,37 @@
  },
  "Euro": {
   "radios": []
+ },
+ "Top 14": {
+  "payant": "Canal+",
+  "radios": []
+ },
+ "Six Nations": {
+  "gratuit": {
+   "nom": "France Télévisions ou TF1",
+   "url": "https://www.france.tv"
+  },
+  "radios": []
+ },
+ "Champions Cup": {
+  "payant": "beIN Sports (certains matchs sur France Télévisions)",
+  "radios": []
+ },
+ "Coupe du monde de rugby": {
+  "gratuit": {
+   "nom": "TF1",
+   "url": "https://www.tf1.fr"
+  },
+  "radios": []
+ },
+ "Tests internationaux": {
+  "gratuit": {
+   "nom": "France Télévisions ou TF1",
+   "url": "https://www.france.tv",
+   "equipes": [
+    "France"
+   ]
+  },
+  "radios": []
  }
 }
