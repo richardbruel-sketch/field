@@ -11,5 +11,37 @@
    "nom": "SailGP (YouTube)",
    "url": "https://www.youtube.com/@SailGP"
   }
+ },
+ {
+  "sport": "Formule 1",
+  "comp": "Grand Prix de Bahreïn (lieu et heure à confirmer)",
+  "a": "Course",
+  "debut": "2026-10-04T00:00:00+02:00",
+  "fin": "2026-10-04T23:59:00+02:00",
+  "jour": true,
+  "source": {
+   "type": "none",
+   "pay": "Canal+"
+  }
+ },
+ {
+  "sport": "Formule 1",
+  "comp": "Grand Prix de Singapour",
+  "a": "Course",
+  "debut": "2026-10-11T14:00:00+02:00",
+  "source": {
+   "type": "none",
+   "pay": "Canal+"
+  }
+ },
+ {
+  "sport": "Formule 1",
+  "comp": "Grand Prix des États-Unis",
+  "a": "Course",
+  "debut": "2026-10-25T21:00:00+01:00",
+  "source": {
+   "type": "none",
+   "pay": "Canal+"
+  }
  }
 ]
