@@ -18,15 +18,17 @@ html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
 :root[data-theme="light"]{--bg:#FFFFFF;--card:#F3F3F0;--ink:#000;--mut:#555;--line:#D6D6D2;--g:#2EA876;--p:#D6408A;--y:#E0A800;--t:#1E9A98;--o:#E0701F;color-scheme:light}
 .logo{color:var(--ink)}
 .lk{background:none;border:0;color:var(--y);font:inherit;text-transform:none;letter-spacing:0;cursor:pointer;text-decoration:underline;padding:0}
-#th{float:right;margin-top:4px}
+main{position:relative}
+#th{position:absolute;top:6px;right:16px;margin:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Poppins,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 main{max-width:640px;margin:0 auto;padding:16px 16px 40px}
 button{font:inherit;color:inherit;cursor:pointer}
-.logo{display:block;width:230px;max-width:70%;margin:6px auto 4px}
+.logo{display:block;width:230px;max-width:70%;margin:34px auto 4px}
 .tag{text-align:center;font-weight:700;margin:0 0 18px}
 .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .chip{padding:7px 15px;border-radius:999px;border:1.5px solid var(--k,var(--line));background:transparent;font-size:14px;font-weight:600}
 .chip.on{background:var(--k,#fff);color:#000;border-color:var(--k,#fff)}
+.std{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}.std th,.std td{padding:7px 4px;text-align:right;border-bottom:1px solid var(--line)}.std th:nth-child(2),.std td:nth-child(2){text-align:left}.std th{color:var(--mut);font-weight:600;font-size:12px}.std td:first-child{color:var(--mut)}.std tr:first-child td{font-weight:700}
 .lab{font-size:12px;color:var(--mut);margin:14px 0 0;text-transform:uppercase;letter-spacing:.08em;font-weight:600}
 .list{display:flex;flex-direction:column;gap:12px;margin-top:16px}
 .card{background:var(--card);border:1.5px solid var(--c,var(--line));border-radius:16px;padding:14px}
@@ -60,11 +62,12 @@ footer{margin-top:24px;text-align:center;font-size:13px;color:var(--mut)}
 
 <p class="lab">Sport · <button id="fe" class="lk">mes favoris</button></p>
 <div class="row" id="fp" role="group" aria-label="Sport"></div>
-<p class="sub" id="fh" hidden>Touche un sport pour l'ajouter ou le retirer de tes favoris. Les favoris passent en premier.</p>
-<div class="row" id="fv" hidden></div>
-<p class="lab">Jour</p>
+<p class="sub" id="fh" hidden>Touche un sport pour l'ajouter (★) ou le retirer (☆) de tes favoris, puis « terminé ». Les favoris passent en premier.</p>
+<p class="lab" id="lv">Vue</p>
+<div class="row" id="fvw" role="group" aria-label="Vue"></div>
+<p class="lab" id="ld">Jour</p>
 <div class="row" id="fd" role="group" aria-label="Jour"></div>
-<p class="lab">Moment</p>
+<p class="lab" id="lm">Moment</p>
 <div class="row" id="fs" role="group" aria-label="Statut"></div>
 <p class="lab" id="lc">Compétition</p>
 <div class="row" id="fc" role="group" aria-label="Compétition"></div>
@@ -75,6 +78,7 @@ footer{margin-top:24px;text-align:center;font-size:13px;color:var(--mut)}
 <div id="pb" style="margin-top:8px"></div>
 </section>
 
+<div id="cl" class="card" style="margin-top:14px" hidden></div>
 <div class="list" id="list"></div>
 <footer id="ft">Field · bêta · Calendrier : ESPN (source non officielle)</footer>
 </main>
@@ -89,19 +93,20 @@ var DUR={Football:115,Rugby:100,Tennis:180,Basket:120,Voile:120,Golf:240,"Formul
 var CP=[["Ligue 1","fra.1"],["Ligue 2","fra.2"],["Premier League","eng.1"],["Liga","esp.1"],["Serie A","ita.1"],["Bundesliga","ger.1"],["Ligue des champions","uefa.champions"],["Ligue des nations","uefa.nations"],["Matchs amicaux","fifa.friendly"],["Coupe du monde","fifa.world"],["Euro","uefa.euro"]];
 var RP=[["Top 14","270559"],["Pro D2",null],["Champions Cup","271937"],["Six Nations","180659"],["Coupe du monde de rugby","164205"],["Tests internationaux","289234"]];
 function cal(){return sp=="Rugby"?{p:"rugby",l:RP,f:RP.filter(function(p){return p[1]}),s:"Rugby"}:{p:"soccer",l:CP,f:CP,s:"Football"}}
-var fav=[],man=[],api={},part={},dif={},sp="Football",fs="all",fc="Toutes",au=null,rem={};
+var ed=false,vw="m",std={},fav=[],man=[],api={},part={},dif={},sp="Football",fs="all",fc="Toutes",au=null,rem={};
 function mid(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
 var D0=mid(new Date()),day=D0;
 function iso(d){var m=d.getMonth()+1,j=d.getDate();return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(j<10?"0":"")+j}
 function $(i){return document.getElementById(i)}
 function sports(){return fav.filter(function(x){return SP.indexOf(x)>=0}).concat(SP.filter(function(x){return fav.indexOf(x)<0}))}
-function favUI(){var el=$("fv");el.innerHTML="";SP.forEach(function(x){var b=document.createElement("button"),on=fav.indexOf(x)>=0;b.className="chip"+(on?" on":"");b.textContent=(on?"★ ":"")+x;b.style.setProperty("--k",COL[x]);b.setAttribute("aria-pressed",on);b.onclick=function(){var i=fav.indexOf(x);if(i>=0)fav.splice(i,1);else fav.push(x);try{localStorage.setItem("fld:fav",JSON.stringify(fav))}catch(e){}bar()};el.appendChild(b)})}
-function chips(el,list,cur,fn,col){el.innerHTML="";list.forEach(function(x,i){var b=document.createElement("button");b.className="chip"+(x[0]==cur?" on":"");b.textContent=x[1];var k=col?(typeof col=="function"?col(x,i):col):"";if(k)b.style.setProperty("--k",k);b.setAttribute("aria-pressed",x[0]==cur);b.onclick=function(){fn(x[0])};el.appendChild(b)})}
-function bar(){favUI();chips($("fp"),sports().map(function(x){return[x,(fav.indexOf(x)>=0?"★ ":"")+x]}),sp,function(v){sp=v;fc="Toutes";bar();load()},function(x){return COL[x[0]]});
+function chips(el,list,cur,fn,col){el.innerHTML="";list.forEach(function(x,i){var b=document.createElement("button");var oc=Array.isArray(cur)?cur.indexOf(x[0])>=0:x[0]==cur;b.className="chip"+(oc?" on":"");b.textContent=x[1];var k=col?(typeof col=="function"?col(x,i):col):"";if(k)b.style.setProperty("--k",k);b.setAttribute("aria-pressed",oc);b.onclick=function(){fn(x[0])};el.appendChild(b)})}
+function bar(){if(sp!="Football"&&sp!="Rugby")vw="m";if(vw=="c"&&!cal().f.some(function(p){return p[0]==fc}))fc=cal().f[0][0];
+$("lv").hidden=$("fvw").hidden=(sp!="Football"&&sp!="Rugby");chips($("fvw"),[["m","Matchs"],["c","Classement"]],vw,function(v){vw=v;bar();load()},function(x){return x[0]=="m"?"var(--g)":"var(--y)"});var cm=vw=="c";$("fd").hidden=$("fs").hidden=$("ld").hidden=$("lm").hidden=$("list").hidden=$("st").hidden=cm;$("cl").hidden=!cm;
+if(ed)chips($("fp"),SP.map(function(x){return[x,(fav.indexOf(x)>=0?"★ ":"☆ ")+x]}),fav,function(v){var i=fav.indexOf(v);if(i>=0)fav.splice(i,1);else fav.push(v);try{localStorage.setItem("fld:fav",JSON.stringify(fav))}catch(e){}bar()},function(x){return COL[x[0]]});else chips($("fp"),sports().map(function(x){return[x,(fav.indexOf(x)>=0?"★ ":"")+x]}),sp,function(v){sp=v;fc="Toutes";bar();load()},function(x){return COL[x[0]]});
 var ds=[];for(var i=-1;i<=7;i++){var d=new Date(D0.getFullYear(),D0.getMonth(),D0.getDate()+i);ds.push([+d,i==0?"Aujourd'hui":i==-1?"Hier":i==1?"Demain":d.toLocaleDateString("fr-FR",{weekday:"short",day:"numeric"})])}
 chips($("fd"),ds,+day,function(v){day=new Date(v);bar();load()},"var(--y)");var on=$("fd").querySelector(".on");if(on)on.scrollIntoView({inline:"center",block:"nearest"});
 chips($("fs"),[["all","Tous"],["live","En cours"],["soon","À venir"],["end","Terminés"]],fs,function(v){fs=v;bar();render()},function(x){return{all:"#fff",live:"var(--p)",soon:"var(--g)",end:"#9A9A9A"}[x[0]]});
-$("fc").hidden=$("lc").hidden=(sp!="Football"&&sp!="Rugby");chips($("fc"),[["Toutes","Toutes les compétitions"],["Équipe de France","Équipe de France"]].concat(cal().l.map(function(c){return[c[0],c[0]]})),fc,function(v){fc=v;bar();render()},function(x,i){return["#fff","var(--y)","var(--g)","var(--p)","var(--t)","var(--o)"][i<2?i:2+(i-2)%4]})}
+$("fc").hidden=$("lc").hidden=(sp!="Football"&&sp!="Rugby");chips($("fc"),(vw=="c"?[]:[["Toutes","Toutes les compétitions"],["Équipe de France","Équipe de France"]]).concat((vw=="c"?cal().f:cal().l).map(function(c){return[c[0],c[0]]})),fc,function(v){fc=v;bar();if(vw=="c")loadStd();else render()},function(x,i){return["#fff","var(--y)","var(--g)","var(--p)","var(--t)","var(--o)"][i<2?i:2+(i-2)%4]})}
 function ts(e){var t=e.strTimestamp||(e.dateEvent+"T"+(e.strTime||"00:00:00"));return Date.parse(/Z|[+-]\d\d:?\d\d$/.test(t)?t:t+"Z")}
 function srcFor(c,x,y){var d=dif[c]||{},g=d.gratuit;if(g&&(!g.equipes||g.equipes.indexOf(x)>=0||g.equipes.indexOf(y)>=0))return{type:"free",nom:d.gratuit.nom,url:d.gratuit.url,pay:d.payant};if(d.radios&&d.radios.length)return{type:"radio",radio:d.radios[0],conf:!!d.radio_verifie,pay:d.payant};return{type:"none",pay:d.payant}}
 function conv(e,c,spn){var cp=(e.competitions||[])[0]||{},t=cp.competitors||[],h=t.filter(function(x){return x.homeAway=="home"})[0]||t[0]||{},v=t.filter(function(x){return x.homeAway=="away"})[0]||t[1]||{},tp=(e.status&&e.status.type)||{},st=Date.parse(e.date),n=function(x){return x.team?x.team.displayName:"?"};return{id:"a"+e.id,sp:spn||"Football",c:c,a:n(h),b:n(v),st:st,en:st+(DUR[spn||"Football"]||115)*6e4,state:tp.state||"pre",min:tp.state=="in"?(e.status.displayClock||tp.shortDetail||""):"",sc:(tp.state&&tp.state!="pre"&&h.score!=null&&v.score!=null)?h.score+" – "+v.score:null,s:srcFor(c,n(h),n(v))}}
@@ -114,11 +119,19 @@ function items(){var l=man.filter(function(m){return m.sp==sp});if(sp=="Football
 function render(){var L=$("list");L.innerHTML="";var it=items();if(!it.length){L.innerHTML="<p class='sub'>"+((sp=="Football"||sp=="Rugby")?"Aucun match ce jour-là pour ces filtres."+(sp=="Rugby"&&fc=="Pro D2"?" La Pro D2 n'a pas de calendrier automatique : ajoute ses matchs dans matchs.json.":""):"Aucun événement ce jour-là. Le calendrier de ce sport sera branché bientôt.")+"</p>";return}
 it.forEach(function(m){var s=stat(m),c=document.createElement("div");c.className="card";c.style.setProperty("--c",COL[m.sp]||"var(--g)");c.innerHTML="<div class='top'><span></span><b></b></div><div class='teams'></div><p class='src'></p>";c.children[0].children[0].textContent=(m.j?m.c:m.c+" · "+hh(m.st));var t=c.children[0].children[1];if(s=="live"){t.textContent=m.j?"ÉVÉNEMENT EN COURS":m.state?"EN COURS"+(m.min?" · "+m.min:"")+(m.sc?" · "+m.sc:""):"EN COURS (estimé)"}else if(s=="end"){t.style.color="var(--mut)";t.textContent="Terminé"+(m.sc?" · "+m.sc:"")}else{t.style.color="var(--mut)";t.textContent=m.j?"Horaires à confirmer":"À venir"}
 c.children[1].textContent=m.b?(m.sc?m.a+" "+m.sc+" "+m.b:m.a+" – "+m.b):m.a;c.children[2].textContent=src(m);var b=document.createElement("button");b.className="btn";if(s=="live"){var ty=m.s.type;b.className="btn main";b.textContent=ty=="free"?"Regarder":ty=="radio"?"Écouter + animation":"Voir les détails";b.onclick=function(){openM(m)}}else if(s=="soon"){b.textContent=rem[m.id]?"Rappel activé":"Me rappeler";b.setAttribute("aria-pressed",!!rem[m.id]);b.onclick=function(){rem[m.id]=!rem[m.id];render()}}else{b.textContent="Terminé";b.disabled=true;b.style.opacity=.5}c.appendChild(b);L.appendChild(c)})}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function sv(e,k){var s=(e.stats||[]).filter(function(x){return x.name==k})[0];return s?(s.displayValue!=null?s.displayValue:s.value):""}
+function stdHtml(j,name){var gs=[];(function w(n){if(!n)return;if(n.standings&&n.standings.entries)gs.push({n:n.name||"",e:n.standings.entries});(n.children||[]).forEach(w)})(j);if(!gs.length)return"<p class='sub'>Pas de classement disponible pour "+esc(name)+".</p>";
+var C=[["gamesPlayed","J"],["wins","V"],["ties","N"],["losses","D"],["pointDifferential","+/-"],["points","Pts"]],out="<b>"+esc(name)+"</b>";
+gs.forEach(function(g){var e=g.e.slice().sort(function(a,b){return(+sv(a,"rank")||999)-(+sv(b,"rank")||999)}),cs=C.filter(function(c){return e.some(function(x){return sv(x,c[0])!==""})});out+=(gs.length>1&&g.n?"<p class='sub' style='margin:10px 0 0'>"+esc(g.n)+"</p>":"")+"<table class='std'><tr><th>#</th><th>Équipe</th>"+cs.map(function(c){return"<th>"+c[1]+"</th>"}).join("")+"</tr>"+e.map(function(x,i){return"<tr><td>"+esc(sv(x,"rank")||i+1)+"</td><td>"+esc(x.team?x.team.displayName:"?")+"</td>"+cs.map(function(c){return"<td>"+esc(sv(x,c[0]))+"</td>"}).join("")+"</tr>"}).join("")+"</table>"});
+return out+"<p class='sub' style='font-size:12px'>Source : ESPN (non officielle)</p>"}
+function loadStd(){var c=cal(),p=c.f.filter(function(x){return x[0]==fc})[0],box=$("cl");if(!p){box.innerHTML="<p class='sub'>Choisis une compétition.</p>";return}var key=c.p+p[1],c0=std[key],name=p[0];if(c0&&Date.now()-c0.t<6e5){box.innerHTML=stdHtml(c0.d,name);return}
+box.innerHTML="<p class='sub'>Chargement du classement…</p>";fetch("https://site.api.espn.com/apis/v2/sports/"+c.p+"/"+p[1]+"/standings").then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(function(j){std[key]={t:Date.now(),d:j};if(vw=="c"&&fc==name)box.innerHTML=stdHtml(j,name)}).catch(function(e){if(vw=="c"&&fc==name)box.innerHTML="<p class='sub'>Classement indisponible ("+esc(e&&e.message||e)+").</p>"})}
 async function stage(q,c){var err=0,msg="",raw=0,r=await Promise.all(c.f.map(function(p){return fetch("https://site.api.espn.com/apis/site/v2/sports/"+c.p+"/"+p[1]+"/scoreboard"+q).then(function(x){if(!x.ok)throw new Error("HTTP "+x.status+" ("+p[1]+")");return x.json()}).then(function(j){var e=j.events||[];raw+=e.length;return e.map(function(v){return conv(v,p[0],c.s)})}).catch(function(e){err++;msg=String(e&&e.message||e);return[]})}));return{all:[].concat.apply([],r),err:err,msg:msg,raw:raw}}
 async function fetchDay(k){var c=cal(),d0=+new Date(k+"T00:00:00"),d1=d0+864e5,inD=function(m){return m.st>=d0&&m.st<d1},o=await stage("?limit=200&dates="+k.replace(/-/g,""),c),l=o.all.filter(inD),tr=["par date : "+o.raw+" match(s), "+l.length+" ce jour-là"],err=o.err,msg=o.msg;
 if(!l.length&&o.err<c.f.length){var o2=await stage("?limit=200",c);l=o2.all.filter(inD);tr.push("sans date : "+o2.raw+" match(s), "+l.length+" ce jour-là");var nx=o2.all.concat(o.all).filter(function(m){return m.st>=d1}).sort(function(x,y){return x.st-y.st})[0];if(nx&&!l.length)tr.push("prochain : "+nx.a+" – "+nx.b+" le "+new Date(nx.st).toLocaleDateString("fr-FR"));err=Math.max(err,o2.err);msg=msg||o2.msg;var nxt=nx&&!l.length?nx.st:null}
 return{l:l.sort(function(x,y){return x.st-y.st}),err:err,msg:msg,tr:tr,nx:typeof nxt=="undefined"?null:nxt}}
-function load(f){if(!f){render();$("st").textContent=""}if(sp!="Football"&&sp!="Rugby")return;var k0=iso(day),k=sp+k0,c=null,td=k0==iso(new Date());if(!f&&api[k]&&!part[k]&&!td)return;if(!f&&!td){try{c=sessionStorage.getItem("fld:"+k)}catch(e){}}if(c){api[k]=JSON.parse(c);render();return}
+function load(f){if(vw=="c"){loadStd();return}if(!f){render();$("st").textContent=""}if(sp!="Football"&&sp!="Rugby")return;var k0=iso(day),k=sp+k0,c=null,td=k0==iso(new Date());if(!f&&api[k]&&!part[k]&&!td)return;if(!f&&!td){try{c=sessionStorage.getItem("fld:"+k)}catch(e){}}if(c){api[k]=JSON.parse(c);render();return}
 if(!f)$("st").textContent="Chargement du calendrier…";fetchDay(k0).then(function(o){if(f&&o.err>=cal().f.length)return;api[k]=o.l;part[k]=(o.err||!o.l.length)?1:0;if(!part[k]&&!td){try{sessionStorage.setItem("fld:"+k,JSON.stringify(o.l))}catch(e){}}var t="";if(o.err>=cal().f.length)t="Service du calendrier injoignable ("+o.msg+").";else{if(!o.l.length)t="Aucun match trouvé pour ce jour. Détail : "+o.tr.join(" · ")+".";if(o.err)t+=" "+o.err+" compétition(s) en erreur."}$("st").textContent=t;if(!o.l.length&&o.nx){var bt=document.createElement("button");bt.className="chip";bt.style.marginLeft="8px";bt.textContent="Aller au "+new Date(o.nx).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});bt.onclick=function(){day=mid(new Date(o.nx));bar();load()};$("st").appendChild(bt)}render()})}
 function lien(w,n){var m=$("msg");m.textContent="Flux indisponible. ";var a=document.createElement("a");a.href=w;a.target="_blank";a.rel="noopener";a.textContent="Ouvrir "+n+" sur son site";m.appendChild(a)}
 async function viaAnnuaire(u){for(var i=0;i<H.length;i++){try{var x=await fetch(H[i]+"/json/stations/byuuid/"+u),j=await x.json();if(j[0]&&j[0].url_resolved)return j[0].url_resolved}catch(e){}}return null}
@@ -133,14 +146,14 @@ var an=document.createElement("div");an.style.cssText="margin-top:14px;padding-t
 function theme(t){document.documentElement.setAttribute("data-theme",t);$("th").textContent=t=="light"?"☾ Sombre":"☀ Clair";var m=document.querySelector("meta[name=theme-color]");if(m)m.content=t=="light"?"#ffffff":"#000000";try{localStorage.setItem("fld:theme",t)}catch(e){}}
 $("th").onclick=function(){theme(document.documentElement.getAttribute("data-theme")=="light"?"dark":"light")};
 theme(document.documentElement.getAttribute("data-theme")=="light"?"light":"dark");
-$("fe").onclick=function(){$("fv").hidden=$("fh").hidden=!$("fv").hidden};
+$("fe").onclick=function(){ed=!ed;$("fe").textContent=ed?"terminé":"mes favoris";$("fh").hidden=!ed;bar()};
 $("px").onclick=function(){$("pn").hidden=true;stop();$("pb").innerHTML=""};
 if(CONTACT){var ft=$("ft"),ca=document.createElement("a");ca.href="mailto:"+CONTACT+"?subject=Avis%20Field%20b%C3%AAta";ca.textContent="Envoyer mes remarques";ft.appendChild(document.createTextNode(" · "));ft.appendChild(ca)}
 try{if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js")}catch(e){}
 function demo(){var t=Date.now(),f=function(o){return new Date(t+o*6e4).toISOString()};return[{sport:"Tennis",comp:"Démo",a:"A. Moreau",b:"B. Keller",debut:f(-60),fin:f(600),jour:true,source:{type:"none"}},{sport:"Voile",comp:"Démo SailGP",a:"Grande finale",debut:f(-60),fin:f(600),jour:true,source:{type:"none"}},{sport:"Golf",comp:"Démo",a:"Dernier tour",debut:f(-60),fin:f(600),jour:true,source:{type:"none"}},{sport:"Formule 1",comp:"Démo",a:"Course",debut:f(-60),fin:f(600),jour:true,source:{type:"none"}}]}
 Promise.all([fetch("matchs.json").then(function(r){return r.json()}).catch(function(){return[]}),fetch("diffusions.json").then(function(r){return r.json()}).catch(function(){return{}})]).then(function(r){var l=Array.isArray(r[0])?r[0]:[];if(/[?&]demo/.test(location.search))l=l.concat(demo());man=l.map(norm);dif=r[1]||{};try{fav=JSON.parse(localStorage.getItem("fld:fav")||"[]")}catch(e){fav=[]}if(fav[0]&&SP.indexOf(fav[0])>=0)sp=fav[0];bar();load()});
 setInterval(render,30000);
-setInterval(function(){if(!document.hidden&&(sp=="Football"||sp=="Rugby")&&iso(day)==iso(new Date()))load(true)},60000);
+setInterval(function(){if(!document.hidden&&vw!="c"&&(sp=="Football"||sp=="Rugby")&&iso(day)==iso(new Date()))load(true)},60000);
 </script>
 </body>
 </html>
