@@ -1,0 +1,63 @@
+[
+ {
+  "sport": "Football",
+  "comp": "Test de flux",
+  "a": "Équipe A",
+  "debut": "2026-01-01T00:00:00+01:00",
+  "fin": "2027-12-31T23:59:00+01:00",
+  "jour": true,
+  "source": {
+   "type": "none"
+  },
+  "flux": "feeds/exemple-football.json",
+  "b": "Équipe B"
+ },
+ {
+  "sport": "Voile",
+  "comp": "Test de flux",
+  "a": "Course",
+  "debut": "2026-01-01T00:00:00+01:00",
+  "fin": "2027-12-31T23:59:00+01:00",
+  "jour": true,
+  "source": {
+   "type": "none"
+  },
+  "flux": "feeds/exemple-voile.json"
+ },
+ {
+  "sport": "Golf",
+  "comp": "Test de flux",
+  "a": "Dernier tour",
+  "debut": "2026-01-01T00:00:00+01:00",
+  "fin": "2027-12-31T23:59:00+01:00",
+  "jour": true,
+  "source": {
+   "type": "none"
+  },
+  "flux": "feeds/exemple-golf.json"
+ },
+ {
+  "sport": "Tennis",
+  "comp": "Test de flux",
+  "a": "Finale",
+  "debut": "2026-01-01T00:00:00+01:00",
+  "fin": "2027-12-31T23:59:00+01:00",
+  "jour": true,
+  "source": {
+   "type": "none"
+  },
+  "flux": "feeds/exemple-tennis.json"
+ },
+ {
+  "sport": "Formule 1",
+  "comp": "Test de flux",
+  "a": "Course",
+  "debut": "2026-01-01T00:00:00+01:00",
+  "fin": "2027-12-31T23:59:00+01:00",
+  "jour": true,
+  "source": {
+   "type": "none"
+  },
+  "flux": "feeds/exemple-f1.json"
+ }
+]

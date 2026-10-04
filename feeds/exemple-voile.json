@@ -1,0 +1,42 @@
+{
+ "version": 1,
+ "sport": "Voile",
+ "evenement": "Deuxième bord",
+ "bateaux": [
+  {
+   "nation": "FRA",
+   "x": 0.5,
+   "y": 0.45,
+   "vitesse": 82,
+   "rang": 1
+  },
+  {
+   "nation": "GBR",
+   "x": 0.45,
+   "y": 0.52,
+   "vitesse": 79,
+   "rang": 2
+  },
+  {
+   "nation": "AUS",
+   "x": 0.58,
+   "y": 0.55,
+   "vitesse": 80,
+   "rang": 3
+  },
+  {
+   "nation": "USA",
+   "x": 0.4,
+   "y": 0.62,
+   "vitesse": 77,
+   "rang": 4
+  },
+  {
+   "nation": "NZL",
+   "x": 0.52,
+   "y": 0.68,
+   "vitesse": 78,
+   "rang": 5
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "sport": "Formule 1",
+ "tour": 12,
+ "voitures": [
+  {
+   "code": "ALX",
+   "p": 2.31,
+   "rang": 1,
+   "couleur": "#E24B4A"
+  },
+  {
+   "code": "BRN",
+   "p": 2.27,
+   "rang": 2,
+   "ecart": 1.1,
+   "couleur": "#378ADD"
+  },
+  {
+   "code": "CVT",
+   "p": 2.2,
+   "rang": 3,
+   "ecart": 3.4,
+   "couleur": "#C99A10"
+  },
+  {
+   "code": "DRS",
+   "p": 2.12,
+   "rang": 4,
+   "ecart": 6.0,
+   "couleur": "#1D9E75"
+  },
+  {
+   "code": "ELM",
+   "p": 2.05,
+   "rang": 5,
+   "ecart": 8.7,
+   "couleur": "#7F77DD"
+  }
+ ]
+}

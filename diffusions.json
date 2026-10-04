@@ -1,0 +1,29 @@
+{
+ "_aide": "Une entrée par compétition (nom affiché dans l'appli). payant : nom de la TV payante. gratuit : {nom,url} si une chaîne gratuite diffuse. radios : numéros dans la liste RA de index.html (0 RMC, 1 franceinfo, 2 Europe 1, 3 à 6 ici). radio_verifie : true seulement après vérification auprès de la radio. Tout est à vérifier avant diffusion publique.",
+ "Ligue 1": {
+  "payant": "Ligue 1+",
+  "radios": [
+   0
+  ],
+  "radio_verifie": false
+ },
+ "Ligue des champions": {
+  "payant": "Canal+",
+  "radios": []
+ },
+ "Ligue 2": {
+  "radios": []
+ },
+ "Premier League": {
+  "radios": []
+ },
+ "Liga": {
+  "radios": []
+ },
+ "Serie A": {
+  "radios": []
+ },
+ "Bundesliga": {
+  "radios": []
+ }
+}

@@ -1,0 +1,39 @@
+{
+ "version": 1,
+ "sport": "Golf",
+ "en_cours": "DUB",
+ "joueurs": [
+  {
+   "code": "MAR",
+   "nom": "J. Martin",
+   "score": -4
+  },
+  {
+   "code": "DUB",
+   "nom": "L. Dubois",
+   "score": -3
+  },
+  {
+   "code": "KEL",
+   "nom": "M. Keller",
+   "score": -2
+  }
+ ],
+ "coups": [
+  {
+   "j": "MAR",
+   "x": 0.9,
+   "y": 0.43
+  },
+  {
+   "j": "DUB",
+   "x": 0.55,
+   "y": 0.38
+  },
+  {
+   "j": "KEL",
+   "x": 0.1,
+   "y": 0.52
+  }
+ ]
+}

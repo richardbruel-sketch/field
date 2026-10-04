@@ -1,0 +1,15 @@
+[
+ {
+  "sport": "Voile",
+  "comp": "SailGP · Grande finale de la saison 2026, Abu Dhabi",
+  "a": "Grande finale",
+  "debut": "2026-11-28T00:00:00+04:00",
+  "fin": "2026-11-29T23:59:00+04:00",
+  "jour": true,
+  "source": {
+   "type": "free",
+   "nom": "SailGP (YouTube)",
+   "url": "https://www.youtube.com/@SailGP"
+  }
+ }
+]

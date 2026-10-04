@@ -1,0 +1,31 @@
+{
+ "version": 1,
+ "sport": "Tennis",
+ "joueurs": [
+  {
+   "code": "MOR",
+   "nom": "A. Moreau"
+  },
+  {
+   "code": "KEL",
+   "nom": "B. Keller"
+  }
+ ],
+ "service": 0,
+ "en_action": 1,
+ "score": "30-15",
+ "balle": {
+  "x": 0.7,
+  "y": 0.4
+ },
+ "positions": [
+  {
+   "x": 0.054,
+   "y": 0.5
+  },
+  {
+   "x": 0.946,
+   "y": 0.4
+  }
+ ]
+}
